@@ -1,25 +1,23 @@
 name: Email Notification On Push
 
 on:
-push:
-branches:
-- main
+  push:
+    branches:
+      - main
 
 jobs:
-notify:
-runs-on: ubuntu-latest
+  notify:
+    runs-on: ubuntu-latest
 
-```
-steps:
-  - name: Send Email via Resend
-    run: |
-      curl -X POST https://api.resend.com/emails \
-      -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "from":"onboarding@resend.dev",
-        "to":"arkaniva101099@gmail.com",
-        "subject":"New Code Push Notification",
-        "html":"<h2>New code pushed</h2><p>Repository: ${{ github.repository }}</p><p>Branch: ${{ github.ref_name }}</p><p>Author: ${{ github.actor }}</p><p>Commit Message: ${{ github.event.head_commit.message }}</p>"
-      }'
-```
+    steps:
+      - name: Send Email via Resend
+        run: |
+          curl -X POST https://api.resend.com/emails \
+          -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "from":"onboarding@resend.dev",
+            "to":"arkaniva101099@gmail.com",
+            "subject":"New Code Push Notification",
+            "html":"<h2>New code pushed</h2><p>Repository: ${{ github.repository }}</p><p>Branch: ${{ github.ref_name }}</p><p>Author: ${{ github.actor }}</p><p>Commit Message: ${{ github.event.head_commit.message }}</p>"
+          }'
