@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.MAIL_USERNAME }}
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: "Code Review Requested"
-          to: ${{ secrets.HEAD_EMAIL }}
+          to: ${{ secrets.HEAD_MAIL }}
           from: GitHub Actions
           body: |
             Commit Message: ${{ env.MSG }}
