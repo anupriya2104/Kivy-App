@@ -1,23 +1,43 @@
-name: Email Notification On Push
+name: Push Notification mail
 
 on:
   push:
-    branches:
-      - main
+    branches: main
 
 jobs:
-  notify:
+  send_email:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Send Email via Resend
+      - uses: actions/checkout@v4
+
+      - name: Extract Data
         run: |
-          curl -X POST https://api.resend.com/emails \
-          -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{
-            "from":"onboarding@resend.dev",
-            "to":"arkaniva101099@gmail.com",
-            "subject":"New Code Push Notification",
-            "html":"<h2>New code pushed</h2><p>Repository: ${{ github.repository }}</p><p>Branch: ${{ github.ref_name }}</p><p>Author: ${{ github.actor }}</p><p>Commit Message: ${{ github.event.head_commit.message }}</p>"
-          }'
+          MSG="${{ github.event.head_commit.message }}"
+          
+          # Extract username
+          [[ "$MSG" =~ @([a-zA-Z0-9_-]+) ]] && REV="${BASH_REMATCH[1]}" || REV="None"
+          
+          # Generate time in India using standard Linux Bash format
+          TIME=$(TZ="Asia/Kolkata" date '+%d/%m/%Y %H:%M:%S.%3N')
+          
+          # Save to environment variables
+          echo "MSG=$MSG" >> $GITHUB_ENV
+          echo "REV=$REV" >> $GITHUB_ENV
+          echo "TIME=$TIME" >> $GITHUB_ENV
+
+      - name: Send Mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "Code Review Requested"
+          to: ${{ secrets.HEAD_EMAIL }}
+          from: GitHub Actions
+          body: |
+            Commit Message: ${{ env.MSG }}
+            Submitted By: ${{ github.actor }}
+            Submitted On: ${{ env.TIME }}
+            Reviewer: @${{ env.REV }}
