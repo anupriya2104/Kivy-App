@@ -1,4 +1,4 @@
-name: Push Notification mail
+name: Push Notification Email
 
 on:
   push:
