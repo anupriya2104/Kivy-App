@@ -1,0 +1,108 @@
+from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+# Create Database
+engine = create_engine("sqlite:///students.db")
+
+# Base Class
+Base = declarative_base()
+
+# Student Table
+class Student(Base):
+
+    __tablename__ = "students"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    branch = Column(String)
+    cgpa = Column(Float)
+
+# Create Table
+Base.metadata.create_all(engine)
+
+# Session
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# INSERT DATA
+s1 = Student(
+    name="Anu",
+    branch="CSE",
+    cgpa=8.1
+)
+
+s2 = Student(
+    name="Rahul",
+    branch="ECE",
+    cgpa=7.8
+)
+
+s3 = Student(
+    name="Priya",
+    branch="IT",
+    cgpa=9.0
+)
+
+session.add_all([s1, s2, s3])
+session.commit()
+
+print("\nStudents Inserted Successfully\n")
+
+# READ DATA
+print("All Students:\n")
+
+students = session.query(Student).all()
+
+for student in students:
+    print(
+        student.id,
+        student.name,
+        student.branch,
+        student.cgpa
+    )
+
+# UPDATE DATA
+student = session.query(Student).filter_by(
+    name="Anu"
+).first()
+
+student.cgpa = 8.5
+
+session.commit()
+
+print("\nAnu's CGPA Updated\n")
+
+# READ AFTER UPDATE
+students = session.query(Student).all()
+
+for student in students:
+    print(
+        student.id,
+        student.name,
+        student.branch,
+        student.cgpa
+    )
+
+# DELETE DATA
+student = session.query(Student).filter_by(
+    name="Rahul"
+).first()
+
+session.delete(student)
+
+session.commit()
+
+print("\nRahul Deleted\n")
+
+# FINAL DATA
+students = session.query(Student).all()
+
+print("Final Table:\n")
+
+for student in students:
+    print(
+        student.id,
+        student.name,
+        student.branch,
+        student.cgpa
+    )
