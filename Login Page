@@ -1,0 +1,201 @@
+from kivymd.app import MDApp
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.label import MDLabel
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.button import MDRaisedButton, MDTextButton
+from kivymd.uix.selectioncontrol import MDCheckbox
+from kivymd.uix.dialog import MDDialog
+
+
+VALID_USERNAME = "admin"
+VALID_PASSWORD = "password123"
+
+
+class LoginApp(MDApp):
+
+    def build(self):
+
+        self.theme_cls.primary_palette = "Blue"
+        self.theme_cls.theme_style = "Light"
+
+        screen = MDScreen()
+
+        card = MDBoxLayout(
+            orientation="vertical",
+            spacing=15,
+            padding=30,
+            size_hint=(0.6, 0.8),
+            pos_hint={
+                "center_x": 0.5,
+                "center_y": 0.5
+            }
+        )
+
+        title = MDLabel(
+            text="My Application",
+            halign="center",
+            font_style="H4"
+        )
+
+        subtitle = MDLabel(
+            text="Welcome Back",
+            halign="center"
+        )
+
+        # self.email = MDTextField(
+        #     hint_text="Email",
+        #     mode="rectangle",
+        #     size_hint_x=0.9,
+        #     pos_hint={"center_x": 0.5}
+        # )
+
+        self.username = MDTextField(
+            hint_text="Username",
+            mode="rectangle",
+            size_hint_x=0.9,
+            pos_hint={"center_x": 0.5}
+        )
+
+        self.password = MDTextField(
+            hint_text="Password",
+            password=True,
+            mode="rectangle",
+            size_hint_x=0.9,
+            pos_hint={"center_x": 0.5}
+        )
+
+        self.show_password_checkbox = MDCheckbox()
+        self.show_password_checkbox.bind(
+            active=self.toggle_password
+        )
+
+        show_box = MDBoxLayout(
+            orientation="horizontal",
+            adaptive_height=True,
+            spacing=10
+        )
+
+        show_box.add_widget(
+            self.show_password_checkbox
+        )
+
+        show_box.add_widget(
+            MDLabel(
+                text="Show Password",
+                adaptive_height=True
+            )
+        )
+
+        self.remember_checkbox = MDCheckbox()
+
+        remember_box = MDBoxLayout(
+            orientation="horizontal",
+            adaptive_height=True,
+            spacing=10
+        )
+
+        remember_box.add_widget(
+            self.remember_checkbox
+        )
+
+        remember_box.add_widget(
+            MDLabel(
+                text="Remember Me",
+                adaptive_height=True
+            )
+        )
+
+        login_btn = MDRaisedButton(
+            text="LOGIN",
+            pos_hint={"center_x": 0.5}
+        )
+
+        login_btn.bind(
+            on_release=self.login
+        )
+
+        forgot_btn = MDTextButton(
+            text="Forgot Password?",
+            pos_hint={"center_x": 0.5}
+        )
+
+        forgot_btn.bind(
+            on_release=self.forgot_password
+        )
+
+        create_btn = MDTextButton(
+            text="Create Account",
+            pos_hint={"center_x": 0.5}
+        )
+
+        create_btn.bind(
+            on_release=self.create_account
+        )
+
+        card.add_widget(title)
+        card.add_widget(subtitle)
+        # card.add_widget(self.email)
+        card.add_widget(self.username)
+        card.add_widget(self.password)
+        card.add_widget(show_box)
+        card.add_widget(remember_box)
+        card.add_widget(login_btn)
+        card.add_widget(forgot_btn)
+        card.add_widget(create_btn)
+
+        screen.add_widget(card)
+
+        return screen
+
+    def toggle_password(self, checkbox, value):
+        self.password.password = not value
+
+    def show_dialog(self, title, text):
+
+        dialog = MDDialog(
+            title=title,
+            text=text
+        )
+
+        dialog.open()
+
+    def login(self, instance):
+
+        username = self.username.text
+        password = self.password.text
+
+        if (
+            username == VALID_USERNAME and
+            password == VALID_PASSWORD
+        ):
+
+            self.show_dialog(
+                "Success",
+                "Login Successful!"
+            )
+
+        else:
+
+            self.show_dialog(
+                "Error",
+                "Invalid Username or Password"
+            )
+
+    def forgot_password(self, instance):
+
+        self.show_dialog(
+            "Forgot Password",
+            "Password reset functionality will be implemented later."
+        )
+
+    def create_account(self, instance):
+
+        self.show_dialog(
+            "Create Account",
+            "Registration functionality will be implemented later."
+        )
+
+
+if __name__ == "__main__":
+    LoginApp().run()
