@@ -1,0 +1,117 @@
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.label import MDLabel
+from kivymd.uix.button import MDRaisedButton, MDIconButton
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.card import MDCard
+
+from kivy.metrics import dp
+
+
+# ── Button config ─────────────────────────────────────────────────────────────
+BUTTONS = [
+    {"label": "A", "action": None},
+    {"label": "B", "action": None},
+    {"label": "C", "action": None},
+]
+
+
+class HomeScreen(MDScreen):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.name = "home"
+        self._build()
+
+    def _build(self):
+        # Card height: header area (~120dp) + 68dp per button
+        card_height = dp(120 + len(BUTTONS) * 68)
+
+        # Main dashboard card
+        card = MDCard(
+            orientation="vertical",
+            spacing=dp(16),
+            padding=[dp(32), dp(28), dp(32), dp(32)],
+            size_hint=(None, None),
+            size=(dp(360), card_height),
+            pos_hint={"center_x": 0.5, "center_y": 0.5},
+            elevation=4,
+            radius=[dp(16)],
+        )
+
+        # ── Header row: title + "X" button ──
+        top_row = MDBoxLayout(
+            orientation="horizontal",
+            size_hint_y=None,
+            height=dp(40),
+        )
+
+        #Dashboard Title
+        top_row.add_widget(
+            MDLabel(
+                text="Dashboard",
+                halign="left",
+                font_style="H6",
+                size_hint_y=None,
+                height=dp(40),
+            )
+        )
+
+        #Close button
+        close_btn = MDIconButton(
+            icon="close",
+            pos_hint={"center_y": 0.5},
+            size_hint_x=None,
+            width=dp(40),
+        )
+        close_btn.bind(on_release=self._logout)
+        top_row.add_widget(close_btn)
+
+        #Subtitle
+        subtitle = MDLabel(
+            text="Choose an option below",
+            halign="left",
+            theme_text_color="Secondary",
+            size_hint_y=None,
+            height=dp(24),
+        )
+
+        divider = MDBoxLayout(size_hint_y=None, height=dp(1))
+        divider.md_bg_color = (0.88, 0.88, 0.88, 1)
+
+        card.add_widget(top_row)
+        card.add_widget(subtitle)
+        card.add_widget(divider)
+        card.add_widget(MDBoxLayout(size_hint_y=None, height=dp(8)))
+
+        # ── Buttons generated from BUTTONS list ──
+        for item in BUTTONS:
+            label = item["label"]
+            action = item["action"]
+
+            btn = MDRaisedButton(
+                text=label,
+                size_hint_x=1,
+                height=dp(52),
+            )
+
+            if callable(action):
+                btn.bind(on_release=lambda inst, l=label, a=action: a(l))
+            else:
+                btn.bind(on_release=lambda inst, l=label: self._default_action(l))
+
+            card.add_widget(btn)
+
+        self.add_widget(card)
+
+    # ── Handlers ──────────────────────────────
+
+    def _default_action(self, label):
+        MDDialog(
+            title=f"Option {label}",
+            text=f"You selected option {label}.",
+        ).open()
+
+    #return to login page
+    def _logout(self, *_):
+        self.manager.current = "login"
