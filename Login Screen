@@ -1,0 +1,153 @@
+from kivymd.uix.screen import MDScreen
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.label import MDLabel
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.button import MDRaisedButton, MDTextButton
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.card import MDCard
+
+from kivy.uix.image import Image
+from kivy.metrics import dp
+
+
+# Hardcoded credentials
+VALID_USERNAME = "admin"
+VALID_PASSWORD = "password123"
+
+
+class LoginScreen(MDScreen):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.name = "login"
+        self._build()
+
+    def _build(self):
+
+        # Main card that contains all login components
+        card = MDCard(
+            orientation="vertical",
+            spacing=dp(12),
+            padding=[dp(32), dp(32), dp(32), dp(32)],
+            size_hint=(None, None),
+            size=(dp(360), dp(500)),
+            pos_hint={"center_x": 0.5, "center_y": 0.5},
+            elevation=4,
+            radius=[dp(16)],
+        )
+
+        #App logo
+        logo = Image(
+            source="logo.png",
+            size_hint=(None, None),
+            size=(dp(80), dp(80)),
+            pos_hint={"center_x": 0.5},
+        )
+
+        #Title
+        title = MDLabel(
+            text="My Application",
+            halign="center",
+            font_style="H5",
+            size_hint_y=None,
+            height=dp(40),
+        )
+
+        #Subtitle
+        subtitle = MDLabel(
+            text="Welcome back",
+            halign="center",
+            theme_text_color="Secondary",
+            size_hint_y=None,
+            height=dp(24),
+        )
+
+        #Username
+        self.username = MDTextField(
+            hint_text="Username",
+            mode="rectangle",
+            size_hint_x=1,
+        )
+
+        #Password
+        self.password = MDTextField(
+            hint_text="Password",
+            password=True,
+            mode="rectangle",
+            size_hint_x=1,
+        )
+
+        # Show / Hide password row
+        show_pw_row = MDBoxLayout(
+            orientation="horizontal",
+            size_hint_y=None,
+            height=dp(24),
+        )
+        show_pw_row.add_widget(MDLabel(text=""))  # left spacer
+
+        self.show_pw_btn = MDTextButton(
+            text="Show password",
+            font_size="11sp",
+            size_hint_x=None,
+            width=dp(120),
+        )
+        self.show_pw_btn.bind(on_release=self._toggle_password)
+        show_pw_row.add_widget(self.show_pw_btn)
+
+        #Login
+        login_btn = MDRaisedButton(
+            text="LOG IN",
+            size_hint_x=1,
+            height=dp(48),
+        )
+        login_btn.bind(on_release=self._login)
+
+        #Forgot password
+        forgot_btn = MDTextButton(
+            text="Forgot password?",
+            pos_hint={"center_x": 0.5},
+            font_size="12sp",
+        )
+        forgot_btn.bind(on_release=self._forgot_password)
+
+        #Adding widgets to card
+        card.add_widget(logo)
+        card.add_widget(title)
+        card.add_widget(subtitle)
+        card.add_widget(MDBoxLayout(size_hint_y=None, height=dp(8)))
+        card.add_widget(self.username)
+        card.add_widget(self.password)
+        card.add_widget(show_pw_row)
+        card.add_widget(MDBoxLayout(size_hint_y=None, height=dp(4)))
+        card.add_widget(login_btn)
+        card.add_widget(forgot_btn)
+
+        #Add card to screen
+        self.add_widget(card)
+
+    # ── Handlers ──────────────────────────────
+
+    def _toggle_password(self, *_):
+        self.password.password = not self.password.password
+        self.show_pw_btn.text = (
+            "Show password" if self.password.password else "Hide password"
+        )
+
+    # Validate username and password
+    def _login(self, *_):
+        if (
+            self.username.text == VALID_USERNAME
+            and self.password.text == VALID_PASSWORD
+        ):
+            self.username.text = ""
+            self.password.text = ""
+            self.manager.current = "home"
+        else:
+            MDDialog(title="Error", text="Invalid username or password.").open()
+
+    # Placeholder for future password reset feature
+    def _forgot_password(self, *_):
+        MDDialog(
+            title="Forgot Password",
+            text="Password reset will be implemented later.",
+        ).open()
