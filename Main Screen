@@ -1,0 +1,22 @@
+from kivymd.app import MDApp
+from kivymd.uix.screenmanager import MDScreenManager
+
+from login_screen import LoginScreen
+from home_screen import HomeScreen
+
+
+class LoginApp(MDApp):
+
+    def build(self):
+        self.theme_cls.primary_palette = "Blue"
+        self.theme_cls.theme_style = "Light"
+
+        sm = MDScreenManager()
+        sm.add_widget(LoginScreen())
+        sm.add_widget(HomeScreen())
+
+        return sm
+
+
+if __name__ == "__main__":
+    LoginApp().run()
