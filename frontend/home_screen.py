@@ -18,7 +18,7 @@ BUTTONS = [
 ]
 
 
-def make_gradient_texture(width, height, top_color, bottom_color):
+def MakeGradientTexture(width, height, top_color, bottom_color):
 
     texture = Texture.create(
         size=(width, height),
@@ -73,7 +73,7 @@ class HomeScreen(MDScreen):
     # UI
     # ==================================================
 
-    def build_ui(self):
+    def BuildUI(self):
 
         with self.canvas.before:
 
@@ -195,44 +195,44 @@ class HomeScreen(MDScreen):
         # LOGOUT BUTTON
         # ==============================
 
-        logout_row = MDBoxLayout(
-            orientation="horizontal",
-            size_hint_y=None,
-            height=dp(50),
-        )
+        # logout_row = MDBoxLayout(
+        #     orientation="horizontal",
+        #     size_hint_y=None,
+        #     height=dp(50),
+        # )
 
-        logout_row.add_widget(MDLabel())
+        # logout_row.add_widget(MDLabel())
 
-        logout_btn = MDIconButton(
-            icon="logout",
-        )
+        # logout_btn = MDIconButton(
+        #     icon="logout",
+        # )
 
-        logout_btn.bind(
-            on_release=self.go_back_to_login
-        )
+        # logout_btn.bind(
+        #     on_release=self.go_back_to_login
+        # )
 
-        logout_row.add_widget(logout_btn)
+        # logout_row.add_widget(logout_btn)
 
-        logout_row.add_widget(MDLabel())
+        # logout_row.add_widget(MDLabel())
 
-        content.add_widget(logout_row)
+        # content.add_widget(logout_row)
 
-        root.add_widget(content)
+        # root.add_widget(content)
 
-        root.add_widget(MDLabel())
+        # root.add_widget(MDLabel())
 
-        self.add_widget(root)
+        # self.add_widget(root)
 
     # ==================================================
     # BACKGROUND
     # ==================================================
 
-    def _draw_gradient(self):
+    def DrawGradient(self):
 
         w = max(int(self.width), 1)
         h = max(int(self.height), 1)
 
-        texture = make_gradient_texture(
+        texture = MakeGradientTexture(
             w,
             h,
             top_color=(0.99, 0.99, 1.00),
@@ -243,14 +243,14 @@ class HomeScreen(MDScreen):
         self._bg_rect.size = self.size
         self._bg_rect.pos = self.pos
 
-    def _update_bg(self, *args):
+    def UpdateBG(self, *args):
         self._draw_gradient()
 
     # ==================================================
     # EVENTS
     # ==================================================
 
-    def on_button_click(self, label):
+    def OnButtonClick(self, label):
 
         if label.strip() == "Create New Case":
 
@@ -263,6 +263,6 @@ class HomeScreen(MDScreen):
                 text=f"{label} page will be implemented soon.",
             ).open()
 
-    def go_back_to_login(self, *args):
+    def GoBackToLogin(self, *args):
 
         self.manager.current = "login"

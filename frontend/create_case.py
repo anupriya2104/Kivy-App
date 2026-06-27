@@ -22,7 +22,7 @@ class CreateNewCaseScreen(MDScreen):
 
         self.build_ui()
 
-    def build_ui(self):
+    def BuildUI(self):
 
         BOX_WIDTH = dp(100)
         BOX_HEIGHT = dp(55)
@@ -261,7 +261,7 @@ class CreateNewCaseScreen(MDScreen):
     # BUSINESS
     # =====================================================
 
-    def set_business(self, value):
+    def SetBusiness(self, value):
 
         self.business_value = value
         self.business_btn.text = value
@@ -274,7 +274,7 @@ class CreateNewCaseScreen(MDScreen):
     # YEAR
     # =====================================================
 
-    def set_year(self, value):
+    def SetYear(self, value):
 
         self.year_value = value
         self.year_btn.text = value
@@ -287,7 +287,7 @@ class CreateNewCaseScreen(MDScreen):
     # UPDATE CASE NUMBER
     # =====================================================
 
-    def update_case_number(self, *args):
+    def UpdateCaseNumber(self, *args):
 
         self.case_number_label.text = (
             f"06"
@@ -300,6 +300,6 @@ class CreateNewCaseScreen(MDScreen):
     # BACK
     # =====================================================
 
-    def go_back(self, *args):
+    def GoBack(self, *args):
 
         self.manager.current = "home"

@@ -20,10 +20,10 @@ class LoginScreen(MDScreen):
         super().__init__(**kwargs)
 
         self.name = "login"
-
+        self.UI_data        
         self.build_ui()
 
-    def build_ui(self):
+    def BuildUI(self):
 
         root = MDBoxLayout(
             orientation="vertical",
@@ -61,7 +61,7 @@ class LoginScreen(MDScreen):
         )
 
         # Username
-        self.username = MDTextField(
+        self.username = MDTextField(    #self in init
             hint_text="Username",
             mode="rectangle",
             size_hint_x=1,
@@ -158,10 +158,10 @@ class LoginScreen(MDScreen):
 
         self.add_widget(root)
 
-    def toggle_password(self, instance, value):
+    def TogglePassword(self, instance, value):
         self.password.password = not value
 
-    def label_tap_toggle(self, instance, touch):
+    def LabelTapToggle(self, instance, touch):
 
         if instance.collide_point(*touch.pos):
 
@@ -173,7 +173,7 @@ class LoginScreen(MDScreen):
 
         return False
 
-    def login(self, *args):
+    def Login(self, *args):
 
         if (
             self.username.text == VALID_USERNAME
@@ -192,7 +192,7 @@ class LoginScreen(MDScreen):
                 text="Invalid username or password.",
             ).open()
 
-    def forgot_password(self, *args):
+    def ForgotPassword(self, *args):
 
         MDDialog(
             title="Forgot Password",

@@ -6,9 +6,9 @@ from home_screen import HomeScreen
 from create_case import CreateNewCaseScreen
 
 
-class LoginApp(MDApp):
+class MainUI(MDApp):  
 
-    def build(self):
+    def Build(self):
 
         self.theme_cls.primary_palette = "Blue"
         self.theme_cls.theme_style = "Light"
@@ -23,4 +23,4 @@ class LoginApp(MDApp):
 
 
 if __name__ == "__main__":
-    LoginApp().run()
+    MainUI().run()
