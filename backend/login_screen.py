@@ -4,27 +4,57 @@ class LoginScreen:
 
     def __init__(self):
 
-        self.username = ""
+        self.username = ""   #var in snake case
         self.password = ""
 
-        self.remember_me = False
+        # Hardcoded credentials
+        self.valid_username = "admin"
+        self.valid_password = "password123"
+
         self.is_authenticated = False
         self.failed_attempts = 0
 
         self.last_login = None
         self.error_message = ""
 
+    # ===========================================
+    # SETTERS
+    # ===========================================
+
     def SetUsername(self, username):
+
         self.username = username.strip()
 
     def SetPassword(self, password):
+
         self.password = password
 
-    def Authenticate(self, valid_username, valid_password):
+    # ===========================================
+    # GETTERS
+    # ===========================================
+
+    def GetUsername(self):
+
+        return self.username
+
+    def GetPassword(self):
+
+        return self.password
+
+    def GetErrorMessage(self):
+
+        return self.error_message
+
+    # ===========================================
+    # AUTHENTICATE
+    # ===========================================
+
+    def Authenticate(self):
 
         if (
-            self.username == valid_username
-            and self.password == valid_password
+            self.username == self.valid_username
+            and
+            self.password == self.valid_password
         ):
 
             self.is_authenticated = True
@@ -39,3 +69,12 @@ class LoginScreen:
         self.error_message = "Invalid username or password."
 
         return False
+
+    # ===========================================
+    # RESET
+    # ===========================================
+
+    def Reset(self):
+
+        self.username = ""
+        self.password = ""
