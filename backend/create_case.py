@@ -2,115 +2,122 @@ from datetime import datetime
 
 class CreateCaseScreen:
 
+    PREFIX = "06"
+
+    DEPARTMENT_COUNT = 5
+
     def __init__(self):
-
-        self.prefix = "06"
-
-        self.business_value = "01"
-
-        self.year_value = str(
-            datetime.now().year
-        )[-2:]
-
-        self.serial_number = "0018"
+        
+        print("CreateCaseScreen backend initialized")
+        self.department_code = None
+        self.year_value = str(datetime.now().year)[-2:]
+        self.serial_raw = ""
+    
 
     # =====================================================
-    # PREFIX
+    # DEPARTMENT (STEP 1/3)
     # =====================================================
 
-    def SetPrefix(self, prefix):
+    def GetDepartmentOptions(self):
+        """Returns the list of 2-digit department codes, e.g. ['01', ..., '05']."""
 
-        self.prefix = prefix
+        options = []
 
-    def GetPrefix(self):
+        for number in range(1, self.DEPARTMENT_COUNT + 1):
+            options.append(f"{number:02}")
 
-        return self.prefix
+        return options
+
+    def SetDepartment(self, department_code):
+
+        self.department_code = department_code
+
+    def GetDepartment(self):
+
+        return self.department_code
+
+    def IsDepartmentSelected(self):
+
+        return self.department_code is not None
 
     # =====================================================
-    # BUSINESS
+    # YEAR (STEP 2/3)
     # =====================================================
 
-    def SetBusiness(self, Business):
+    def GetYearOptions(self):
+        """Returns [prev_year, current_year, next_year] as 2-digit strings."""
 
-        self.business_value = Business
+        current_year = datetime.now().year
 
-    def GetBusiness(self):
+        options = []
 
-        return self.business_value
+        for year in range(current_year - 1, current_year + 2):
+            options.append(str(year)[-2:])
 
-    # =====================================================
-    # YEAR
-    # =====================================================
+        return options
 
-    def SetYear(self, Year):
+    def SetYear(self, year_value):
 
-        self.year_value = Year
+        self.year_value = year_value
 
     def GetYear(self):
 
         return self.year_value
 
     # =====================================================
-    # SERIAL
+    # SERIAL NUMBER (STEP 3/3)
     # =====================================================
 
-    def SetSerial(self, Serial):
+    def SetSerialRaw(self, raw_text):
+        """Stores raw digit input typed by the user (not yet padded)."""
 
-        self.serial_number = Serial
+        digits_only = "".join(
+            character for character in raw_text if character.isdigit()
+        )
 
-    def GetSerial(self):
+        # Cap at 4 digits since the final field is 4 digits wide
+        self.serial_raw = digits_only[:4]
 
-        return self.serial_number
+    def GetSerialRaw(self):
+
+        return self.serial_raw
+
+    def GetSerialPadded(self):
+        """Returns the serial number zero-padded to 4 digits."""
+
+        if self.serial_raw == "":
+            return "0000"
+
+        return self.serial_raw.zfill(4)
+
+    def IsSerialValid(self):
+
+        return len(self.serial_raw) > 0
 
     # =====================================================
-    # CASE NUMBER
+    # FINAL CASE NUMBER
     # =====================================================
 
     def GetCaseNumber(self):
+        """Builds the full hidden 10-digit case number."""
 
         return (
-            f"{self.prefix}"
-            f"{self.business_value}"
+            f"{self.PREFIX}"
+            f"{self.department_code}"
             f"{self.year_value}"
-            f"{self.serial_number}"
+            f"{self.GetSerialPadded()}"
         )
 
-    # =====================================================
-    # BUSINESS VALUES
-    # =====================================================
+    def SaveCase(self):
+        """
+        Finalizes the case. Returns the generated case number.
+        Persistence (DB / file) can be plugged in here later.
+        """
 
-    def GetBusinessValues(self):
+        case_number = self.GetCaseNumber()
 
-        values = []
-
-        for Number in range(1, 7):
-
-            values.append(
-                f"{Number:02}"
-            )
-
-        return values
-
-    # =====================================================
-    # YEAR VALUES
-    # =====================================================
-
-    def GetYearValues(self):
-
-        current_year = datetime.now().year
-
-        values = []
-
-        for Year in range(
-            current_year - 1,
-            current_year + 2,
-        ):
-
-            values.append(
-                str(Year)[-2:]
-            )
-
-        return values
+        # Placeholder for real persistence — currently just returns the code
+        return case_number
 
     # =====================================================
     # RESET
@@ -118,10 +125,6 @@ class CreateCaseScreen:
 
     def Reset(self):
 
-        self.business_value = "01"
-
-        self.year_value = str(
-            datetime.now().year
-        )[-2:]
-
-        self.serial_number = "0018"
+        self.department_code = None
+        self.year_value = str(datetime.now().year)[-2:]
+        self.serial_raw = ""

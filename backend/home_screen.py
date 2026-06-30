@@ -24,9 +24,9 @@ class HomeScreen:
     # SET SELECTED BUTTON
     # =====================================================
 
-    def SetSelectedButton(self, ButtonName):
+    def SetSelectedButton(self, selected_button):
 
-        self.selected_button = ButtonName
+        self.selected_button = selected_button.strip()
 
     # =====================================================
     # GET SELECTED BUTTON
