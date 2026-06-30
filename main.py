@@ -1,9 +1,9 @@
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager
 
-from login_screen import LoginScreen
-from home_screen import HomeScreen
-from create_case import CreateNewCaseScreen
+from login_screen import LoginScreenUI
+from home_screen import HomeScreenUI
+from create_case import CreateCaseScreenUI
 
 
 class LoginApp(MDApp):
@@ -13,14 +13,13 @@ class LoginApp(MDApp):
         self.theme_cls.primary_palette = "Blue"
         self.theme_cls.theme_style = "Light"
 
-        sm = ScreenManager()
+        screen_manager = ScreenManager()
 
-        sm.add_widget(LoginScreen())
-        sm.add_widget(HomeScreen())
-        sm.add_widget(CreateNewCaseScreen())
+        screen_manager.add_widget(LoginScreenUI())
+        screen_manager.add_widget(HomeScreenUI())
+        screen_manager.add_widget(CreateCaseScreenUI())
 
-        return sm
-
+        return screen_manager
 
 if __name__ == "__main__":
     LoginApp().run()

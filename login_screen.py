@@ -1,3 +1,5 @@
+from backend.login_screen import LoginScreen as LoginScreenBackend
+
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
@@ -10,20 +12,24 @@ from kivy.uix.image import Image
 from kivy.metrics import dp
 
 
-VALID_USERNAME = "admin"
-VALID_PASSWORD = "password123"
-
-
-class LoginScreen(MDScreen):
+class LoginScreenUI(MDScreen):
 
     def __init__(self, **kwargs):
+
         super().__init__(**kwargs)
 
         self.name = "login"
 
-        self.build_ui()
+        # Backend Object
+        self.ui_data = LoginScreenBackend()
 
-    def build_ui(self):
+        self.CreateUIElements()
+
+    # =====================================================
+    # CREATE UI
+    # =====================================================
+
+    def CreateUIElements(self):
 
         root = MDBoxLayout(
             orientation="vertical",
@@ -31,18 +37,21 @@ class LoginScreen(MDScreen):
             spacing=dp(14),
         )
 
-        # Top spacer
-        root.add_widget(MDLabel(size_hint_y=0.3))
+        root.add_widget(
+            MDLabel(
+                size_hint_y=0.3
+            )
+        )
 
-        # Logo
         logo = Image(
-        source="resources/logo.png",
-        size_hint=(None, None),
-        size=(dp(100), dp(100)),
-        pos_hint={"center_x": 0.5},
-)
+            source="resources/logo.png",
+            size_hint=(None, None),
+            size=(dp(100), dp(100)),
+            pos_hint={
+                "center_x": 0.5
+            },
+        )
 
-        # Title
         title = MDLabel(
             text="My Application",
             halign="center",
@@ -51,7 +60,6 @@ class LoginScreen(MDScreen):
             height=dp(50),
         )
 
-        # Subtitle
         subtitle = MDLabel(
             text="Welcome back",
             halign="center",
@@ -60,72 +68,76 @@ class LoginScreen(MDScreen):
             height=dp(25),
         )
 
-        # Username
         self.username = MDTextField(
-            hint_text="Username",
+            hint_text="username",
             mode="rectangle",
             size_hint_x=1,
         )
 
-        # Password
         self.password = MDTextField(
-            hint_text="Password",
+            hint_text="password",
             password=True,
             mode="rectangle",
             size_hint_x=1,
         )
 
-        # Show Password Row
-        show_pw_row = MDBoxLayout(
+        show_password_row = MDBoxLayout(
             orientation="horizontal",
             size_hint_y=None,
             height=dp(36),
             spacing=dp(6),
         )
 
-        self.show_pw_checkbox = MDCheckbox(
+        self.ShowPasswordCheckBox = MDCheckbox(
             size_hint=(None, None),
             size=(dp(32), dp(32)),
         )
 
-        self.show_pw_checkbox.bind(
-            active=self.toggle_password
+        self.ShowPasswordCheckBox.bind(
+            active=self.TogglePassword
         )
 
-        show_pw_label = MDLabel(
+        show_password_label = MDLabel(
             text="Show password",
             size_hint_x=None,
             width=dp(120),
         )
 
-        show_pw_label.bind(
-            on_touch_down=self.label_tap_toggle
+        show_password_label.bind(
+            on_touch_down=self.LabelTapToggle
         )
 
-        # LEFT aligned
-        show_pw_row.add_widget(self.show_pw_checkbox)
-        show_pw_row.add_widget(show_pw_label)
-        show_pw_row.add_widget(MDLabel())
+        show_password_row.add_widget(
+            self.ShowPasswordCheckBox
+        )
 
-        # Login Button
-        login_btn = MDRaisedButton(
+        show_password_row.add_widget(
+            show_password_label
+        )
+
+        show_password_row.add_widget(
+            MDLabel()
+        )
+
+        login_button = MDRaisedButton(
             text="LOG IN",
             size_hint_x=1,
             height=dp(55),
         )
 
-        login_btn.bind(
-            on_release=self.login
+        login_button.bind(
+            on_release=self.Login
         )
 
-        # Forgot Password
-        forgot_btn = MDTextButton(
+        forgot_password_button = MDTextButton(
             text="Forgot password?",
-            pos_hint={"center_x": 0.5},
+            pos_hint={
+                "center_x": 0.5
+            },
         )
 
-        forgot_btn.bind(
-            on_release=self.forgot_password
+        forgot_password_button.bind(
+            on_release=self.ForgotPassword
         )
 
         root.add_widget(logo)
@@ -141,7 +153,7 @@ class LoginScreen(MDScreen):
 
         root.add_widget(self.username)
         root.add_widget(self.password)
-        root.add_widget(show_pw_row)
+        root.add_widget(show_password_row)
 
         root.add_widget(
             MDBoxLayout(
@@ -150,38 +162,81 @@ class LoginScreen(MDScreen):
             )
         )
 
-        root.add_widget(login_btn)
-        root.add_widget(forgot_btn)
+        root.add_widget(login_button)
+        root.add_widget(forgot_password_button)
 
-        # Bottom spacer
-        root.add_widget(MDLabel(size_hint_y=0.4))
+        root.add_widget(
+            MDLabel(
+                size_hint_y=0.4
+            )
+        )
 
         self.add_widget(root)
 
-    def toggle_password(self, instance, value):
+    # =====================================================
+    # DISPLAY
+    # =====================================================
+
+    def Display(self, Visible):
+
+        self.opacity = 1 if Visible else 0
+
+        self.disabled = not Visible
+
+    # =====================================================
+    # FILL FROM BACKEND
+    # =====================================================
+
+    def FillFromBackend(self):
+
+        self.username.text = self.ui_data.username
+
+        self.password.text = self.ui_data.password
+
+        # =====================================================
+    # TOGGLE PASSWORD
+    # =====================================================
+
+    def TogglePassword(self, instance, value):
+
         self.password.password = not value
 
-    def label_tap_toggle(self, instance, touch):
+    # =====================================================
+    # LABEL TAP
+    # =====================================================
+
+    def LabelTapToggle(self, instance, touch):
 
         if instance.collide_point(*touch.pos):
 
-            self.show_pw_checkbox.active = (
-                not self.show_pw_checkbox.active
+            self.ShowPasswordCheckBox.active = (
+                not self.ShowPasswordCheckBox.active
             )
 
             return True
 
         return False
 
-    def login(self, *args):
+    # =====================================================
+    # LOGIN
+    # =====================================================
 
-        if (
-            self.username.text == VALID_USERNAME
-            and self.password.text == VALID_PASSWORD
-        ):
+    def Login(self, *args):
 
-            self.username.text = ""
-            self.password.text = ""
+        # Copy values from UI to Backend
+        self.ui_data.SetUsername(
+            self.username.text
+        )
+
+        self.ui_data.SetPassword(
+            self.password.text
+        )
+
+        # Authenticate using Backend
+        if self.ui_data.Authenticate():
+            self.ui_data.Reset()
+
+            self.FillFromBackend()
 
             self.manager.current = "home"
 
@@ -189,13 +244,16 @@ class LoginScreen(MDScreen):
 
             MDDialog(
                 title="Error",
-                text="Invalid username or password.",
+                text=self.ui_data.error_message,
             ).open()
 
-    def forgot_password(self, *args):
+    # =====================================================
+    # FORGOT PASSWORD
+    # =====================================================
+
+    def ForgotPassword(self, *args):
 
         MDDialog(
-            title="Forgot Password",
-            text="Password reset will be implemented later.",
+            title="Forgot password",
+            text="password reset will be implemented later.",
         ).open()
-

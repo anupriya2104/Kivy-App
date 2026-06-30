@@ -1,7 +1,9 @@
+from backend.home_screen import HomeScreen as HomeScreenBackend
+
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
-from kivymd.uix.button import MDRaisedButton, MDIconButton
+from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.dialog import MDDialog
 
 from kivy.graphics import Rectangle
@@ -9,102 +11,98 @@ from kivy.graphics.texture import Texture
 from kivy.metrics import dp
 
 
-BUTTONS = [
-    {"label": "      Create New Case     "},
-    {"label": "Edit Existing Case Data"},
-    {"label": " Show Assigned Tasks "},
-    {"label": "         View Reports        "},
-    {"label": "             Settings             "},
-]
+def MakeGradientTexture(Width, Height, TopColor, BottomColor):
 
-
-def make_gradient_texture(width, height, top_color, bottom_color):
-
-    texture = Texture.create(
-        size=(width, height),
+    texture_object = Texture.create(
+        size=(Width, Height),
         colorfmt="rgb",
     )
 
     pixels = []
 
-    for row in range(height):
+    for row in range(Height):
 
-        t = row / max(height - 1, 1)
+        T = row / max(Height - 1, 1)
 
-        r = int(
-            (top_color[0] * t +
-             bottom_color[0] * (1 - t))
-            * 255
+        R = int(
+            (
+                TopColor[0] * T
+                + BottomColor[0] * (1 - T)
+            ) * 255
         )
 
-        g = int(
-            (top_color[1] * t +
-             bottom_color[1] * (1 - t))
-            * 255
+        G = int(
+            (
+                TopColor[1] * T
+                + BottomColor[1] * (1 - T)
+            ) * 255
         )
 
-        b = int(
-            (top_color[2] * t +
-             bottom_color[2] * (1 - t))
-            * 255
+        B = int(
+            (
+                TopColor[2] * T
+                + BottomColor[2] * (1 - T)
+            ) * 255
         )
 
-        pixels.extend([r, g, b] * width)
+        pixels.extend([R, G, B] * Width)
 
-    texture.blit_buffer(
+    texture_object.blit_buffer(
         bytes(pixels),
         colorfmt="rgb",
         bufferfmt="ubyte",
     )
 
-    return texture
+    return texture_object
 
 
-class HomeScreen(MDScreen):
+class HomeScreenUI(MDScreen):
 
     def __init__(self, **kwargs):
+
         super().__init__(**kwargs)
 
         self.name = "home"
 
-        self.build_ui()
+        # Backend Object
+        self.ui_data = HomeScreenBackend()
 
-    # ==================================================
-    # UI
-    # ==================================================
+        self.CreateUIElements()
 
-    def build_ui(self):
+    # =====================================================
+    # CREATE UI
+    # =====================================================
+
+    def CreateUIElements(self):
 
         with self.canvas.before:
 
-            self._bg_rect = Rectangle(
+            self.BackgroundRectangle = Rectangle(
                 size=self.size,
                 pos=self.pos,
             )
 
         self.bind(
-            size=self._update_bg,
-            pos=self._update_bg,
+            size=self.UpdateBackground,
+            pos=self.UpdateBackground,
         )
 
-        self._draw_gradient()
+        self.DrawGradient()
 
         root = MDBoxLayout(
             orientation="vertical",
         )
 
-        root.add_widget(MDLabel())
-
-        # ==============================
-        # CENTER CONTENT
-        # ==============================
+        root.add_widget(
+            MDLabel()
+        )
 
         content = MDBoxLayout(
             orientation="vertical",
-            spacing=dp(15),
+            spacing=dp(20),
             adaptive_height=True,
             size_hint=(None, None),
-            width=dp(600),
+            width=dp(400),
             pos_hint={
                 "center_x": 0.5,
                 "center_y": 0.5,
@@ -148,121 +146,102 @@ class HomeScreen(MDScreen):
             )
         )
 
-        # ==============================
-        # BUTTONS
-        # ==============================
+        button_width = dp(350)
+        button_height = dp(60)
 
-        BUTTON_WIDTH = dp(350)
-        BUTTON_HEIGHT = dp(60)
+        for label in self.ui_data.GetButtons():
 
-        for item in BUTTONS:
-
-            row = MDBoxLayout(
-                orientation="horizontal",
-                size_hint_y=None,
-                height=BUTTON_HEIGHT,
-            )
-
-            row.add_widget(MDLabel())
-
-            btn = MDRaisedButton(
-                text=item["label"],
+            button = MDRaisedButton(
+                text=label,
                 size_hint=(None, None),
-                width=BUTTON_WIDTH,
-                height=BUTTON_HEIGHT,
+                size=(dp(360), dp(60)),
+                pos_hint={"center_x": 0.5},
             )
 
-            btn.bind(
-                on_release=lambda inst,
-                l=item["label"]:
-                self.on_button_click(l)
+            button.bind(
+                on_release=lambda instance, value=label:
+                self.OnButtonClick(value)
             )
 
-            row.add_widget(btn)
-
-            row.add_widget(MDLabel())
-
-            content.add_widget(row)
-
-        content.add_widget(
-            MDBoxLayout(
-                size_hint_y=None,
-                height=dp(20),
-            )
-        )
-
-        # ==============================
-        # LOGOUT BUTTON
-        # ==============================
-
-        logout_row = MDBoxLayout(
-            orientation="horizontal",
-            size_hint_y=None,
-            height=dp(50),
-        )
-
-        logout_row.add_widget(MDLabel())
-
-        logout_btn = MDIconButton(
-            icon="logout",
-        )
-
-        logout_btn.bind(
-            on_release=self.go_back_to_login
-        )
-
-        logout_row.add_widget(logout_btn)
-
-        logout_row.add_widget(MDLabel())
-
-        content.add_widget(logout_row)
+            content.add_widget(button)
 
         root.add_widget(content)
 
-        root.add_widget(MDLabel())
+        root.add_widget(
+            MDLabel()
+        )
 
         self.add_widget(root)
 
-    # ==================================================
-    # BACKGROUND
-    # ==================================================
+    # =====================================================
+    # DISPLAY
+    # =====================================================
 
-    def _draw_gradient(self):
+    def Display(self, Visible):
 
-        w = max(int(self.width), 1)
-        h = max(int(self.height), 1)
+        self.opacity = 1 if Visible else 0
 
-        texture = make_gradient_texture(
-            w,
-            h,
-            top_color=(0.99, 0.99, 1.00),
-            bottom_color=(0.95, 0.96, 0.98),
+        self.disabled = not Visible
+
+    # =====================================================
+    # FILL FROM BACKEND
+    # =====================================================
+
+    def FillFromBackend(self):
+
+        pass
+
+        # =====================================================
+    # DRAW GRADIENT
+    # =====================================================
+
+    def DrawGradient(self):
+
+        Width = max(int(self.width), 1)
+        Height = max(int(self.height), 1)
+
+        texture_object = MakeGradientTexture(
+            Width,
+            Height,
+            TopColor=(0.99, 0.99, 1.00),
+            BottomColor=(0.95, 0.96, 0.98),
         )
 
-        self._bg_rect.texture = texture
-        self._bg_rect.size = self.size
-        self._bg_rect.pos = self.pos
+        self.BackgroundRectangle.texture = texture_object
+        self.BackgroundRectangle.size = self.size
+        self.BackgroundRectangle.pos = self.pos
 
-    def _update_bg(self, *args):
-        self._draw_gradient()
+    # =====================================================
+    # UPDATE BACKGROUND
+    # =====================================================
 
-    # ==================================================
-    # EVENTS
-    # ==================================================
+    def UpdateBackground(self, *args):
 
-    def on_button_click(self, label):
+        self.DrawGradient()
 
-        if label.strip() == "Create New Case":
+    # =====================================================
+    # BUTTON CLICK
+    # =====================================================
+
+    def OnButtonClick(self, label):
+
+        self.ui_data.SetSelectedButton(label)
+
+        if self.ui_data.GetSelectedButton() == "Create New Case":
 
             self.manager.current = "create_case"
 
         else:
 
             MDDialog(
-                title=label,
-                text=f"{label} page will be implemented soon.",
+                title=self.ui_data.GetSelectedButton(),
+                text=f"{self.ui_data.GetSelectedButton()} page will be implemented soon.",
             ).open()
+            
+    # =====================================================
+    # GO BACK TO LOGIN
+    # =====================================================
 
-    def go_back_to_login(self, *args):
+    def GoBackToLogin(self, *args):
 
         self.manager.current = "login"
