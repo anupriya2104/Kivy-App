@@ -1,10 +1,9 @@
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager
 
-from login_screen import LoginScreenUI
-from home_screen import HomeScreenUI
-from create_case import CreateCaseScreenUI
-
+from frontend.login_screen import LoginScreenUI
+from frontend.home_screen import HomeScreenUI
+from frontend.create_case import CreateCaseScreenUI
 
 class LoginApp(MDApp):
 
